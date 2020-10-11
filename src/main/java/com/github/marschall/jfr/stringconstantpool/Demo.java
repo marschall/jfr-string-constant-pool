@@ -6,7 +6,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import jdk.jfr.Category;
+import jdk.jfr.Description;
 import jdk.jfr.Event;
+import jdk.jfr.Label;
 import jdk.jfr.Recording;
 
 public final class Demo {
@@ -35,7 +38,10 @@ public final class Demo {
   private static void generateEvents() {
     for (int i = 0; i < 10; i++) {
       CustomEvent event = new CustomEvent();
-      event.stringAttribute = STRING_ATTRIBUTE_VALUE;
+//      event.stringAttribute = STRING_ATTRIBUTE_VALUE;
+      event.setStringAttribute(STRING_ATTRIBUTE_VALUE);
+      event.begin();
+      event.end();
       event.commit();
     }
   }
@@ -69,9 +75,22 @@ public final class Demo {
     return occurrences;
   }
 
+  @Label("Operation")
+  @Description("A JDBC Operation")
+  @Category("Spring JDBC")
   static class CustomEvent extends Event {
 
+    @Label("Query")
+    @Description("The SQL query string")
     String stringAttribute;
+
+    String getStringAttribute() {
+      return this.stringAttribute;
+    }
+
+    void setStringAttribute(String stringAttribute) {
+      this.stringAttribute = stringAttribute;
+    }
 
   }
 
